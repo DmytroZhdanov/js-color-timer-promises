@@ -7,38 +7,45 @@ const refs = {
   outputMinutes: document.querySelector('[data-minutes]'),
   outputSeconds: document.querySelector('[data-seconds]'),
 };
+
 let delta;
 const DELAY = 1000;
 
 const message =
-  '<div class="alert-message is-hidden">🚫 Please, choose a date in the future</div>';
+  '<div class="alert-message is-hidden"> 🚫 Please, choose a date in the future</div>';
 refs.body.insertAdjacentHTML('beforeend', message);
 const alertContainer = document.querySelector('.alert-message');
 
 refs.input.type = 'datetime-local';
-refs.startBtn.disabled = 'true';
+refs.startBtn.disabled = true;
 
 refs.input.addEventListener('blur', onInputBlur);
 refs.startBtn.addEventListener('click', onStartBtnClick);
 
 function onStartBtnClick() {
+  refs.startBtn.disabled = true;
+  setTimer();
   const id = setInterval(() => {
-    delta = getDeltaTime();
-
-    const days = calculateDates(delta);
-    const hours = calculateHours(delta);
-    const minutes = calculateMinutes(delta);
-    const seconds = calculateSeconds(delta);
-
-    refs.outputDays.textContent = `${days}`;
-    refs.outputHours.textContent = `${hours}`;
-    refs.outputMinutes.textContent = `${minutes}`;
-    refs.outputSeconds.textContent = `${seconds}`;
+    setTimer()
 
     if (delta < DELAY) {
       clearInterval(id);
     }
   }, DELAY);
+}
+
+function setTimer() {
+  delta = getDeltaTime();
+
+  const days = calculateDates(delta);
+  const hours = calculateHours(delta);
+  const minutes = calculateMinutes(delta);
+  const seconds = calculateSeconds(delta);
+
+  refs.outputDays.textContent = `${days}`;
+  refs.outputHours.textContent = `${hours}`;
+  refs.outputMinutes.textContent = `${minutes}`;
+  refs.outputSeconds.textContent = `${seconds}`;
 }
 
 function getDeltaTime() {
@@ -71,11 +78,13 @@ function onInputBlur() {
   const isInFuture = getDeltaTime() > 0;
 
   if (!isInFuture) {
-    refs.startBtn.disabled = isInFuture;
+    refs.startBtn.disabled = !isInFuture;
     alertContainer.classList.remove('is-hidden');
 
     setTimeout(() => {
       alertContainer.classList.add('is-hidden');
     }, 3000);
+  } else {
+    refs.startBtn.disabled = !isInFuture;
   }
 }
