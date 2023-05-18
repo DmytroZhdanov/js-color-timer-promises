@@ -4,7 +4,8 @@ import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
 const refs = {
   input: document.querySelector('#datetime-picker'),
-  startBtn: document.querySelector('button[data-start]'),
+  startBtn: document.querySelector('[data-start]'),
+  resetBtn: document.querySelector('[data-reset]'),
   outputDays: document.querySelector('[data-days]'),
   outputHours: document.querySelector('[data-hours]'),
   outputMinutes: document.querySelector('[data-minutes]'),
@@ -32,18 +33,36 @@ const options = {
 };
 
 refs.startBtn.disabled = true;
+refs.resetBtn.disabled = true;
 
 flatpickr(refs.input, options);
 
 refs.startBtn.addEventListener('click', onStartBtnClick);
+refs.resetBtn.addEventListener('click', onResetBtnClick);
+
+function onResetBtnClick() {
+  refs.resetBtn.disabled = true;
+  refs.input.disabled = false;
+  refs.outputDays.textContent = '00';
+  refs.outputHours.textContent = '00';
+  refs.outputMinutes.textContent = '00';
+  refs.outputSeconds.textContent = '00';
+}
 
 function onStartBtnClick() {
+  refs.input.disabled = true;
   refs.startBtn.disabled = true;
+  refs.resetBtn.disabled = false;
+
   setTimer();
+
   const id = setInterval(() => {
     setTimer();
 
+    refs.resetBtn.addEventListener('click', clearInterval(id));
+
     if (delta < DELAY) {
+      refs.input.disabled = false;
       clearInterval(id);
     }
   }, DELAY);
@@ -51,12 +70,12 @@ function onStartBtnClick() {
 
 function setTimer() {
   delta = getDeltaTime();
-  const {days, hours, minutes, seconds} = convertMs(delta);
+  const { days, hours, minutes, seconds } = convertMs(delta);
 
-    refs.outputDays.textContent = addLeadingZero(days);
-    refs.outputHours.textContent = addLeadingZero(hours);
-    refs.outputMinutes.textContent = addLeadingZero(minutes);
-    refs.outputSeconds.textContent = addLeadingZero(seconds);
+  refs.outputDays.textContent = addLeadingZero(days);
+  refs.outputHours.textContent = addLeadingZero(hours);
+  refs.outputMinutes.textContent = addLeadingZero(minutes);
+  refs.outputSeconds.textContent = addLeadingZero(seconds);
 }
 
 function convertMs(ms) {
@@ -83,10 +102,8 @@ function addLeadingZero(value) {
   return String(value).padStart(2, '0');
 }
 
-
 // -------------------- Solution without libraries flatpickr and notiflix --------------------
 // ------- (To check the solution comment all code above and uncomment all code below) -------
-
 
 // const refs = {
 //   body: document.body,

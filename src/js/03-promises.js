@@ -11,9 +11,15 @@ refs.form.addEventListener('submit', onFormSbmt);
 
 function onFormSbmt(evt) {
   evt.preventDefault();
+
   const {
     elements: { delay, step, amount },
   } = evt.currentTarget;
+
+  if (+delay.value < 0 || +step.value < 0 || +amount.value < 0) {
+    Notify.failure('Please, enter only positive values')
+    return
+  }
 
   for (let i = 0; i < +amount.value; i += 1) {
     const countedDelay = +delay.value + +step.value * i;
