@@ -59,7 +59,7 @@ function onStartBtnClick() {
   const id = setInterval(() => {
     setTimer();
 
-    refs.resetBtn.addEventListener('click', clearInterval(id));
+    refs.resetBtn.addEventListener('click', () => clearInterval(id));
 
     if (delta < DELAY) {
       refs.input.disabled = false;
